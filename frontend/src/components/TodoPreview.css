@@ -1,0 +1,64 @@
+/* src/components/TodoPreview.css */
+
+.todo-preview {
+    margin: 2rem 0;
+    text-align: left;
+    background-color: #1f2937;
+    padding: 1rem;
+    border-radius: 0.5rem;
+  }
+
+  .input-container {
+    display: flex;
+    gap: 0.5rem;
+    margin-bottom: 1rem;
+  }
+
+  .input-container input {
+    flex: 1;
+    padding: 0.5rem;
+    border-radius: 0.25rem;
+    border: none;
+  }
+
+  .input-container button {
+    padding: 0.5rem 1rem;
+    background-color: #00bcd4;
+    border: none;
+    color: white;
+    border-radius: 0.25rem;
+    cursor: pointer;
+  }
+
+  .input-container button:hover {
+    background-color: #0097a7;
+  }
+
+  ul {
+    list-style: none;
+    padding: 0;
+  }
+
+  li {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0.25rem 0;
+    border-bottom: 1px solid #374151;
+  }
+
+  li.done span {
+    text-decoration: line-through;
+    opacity: 0.6;
+  }
+
+  li span {
+    cursor: pointer;
+  }
+
+  li button {
+    background: none;
+    border: none;
+    color: #f87171;
+    cursor: pointer;
+  }
