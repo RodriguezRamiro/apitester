@@ -12,7 +12,7 @@ function Navbar() {
   return (
     <nav className="navbar">
       <div className="nav-container">
-        <h1 className="nav-logo">My App</h1>
+        <h1 className="nav-logo">PulseBoard</h1>
 
         <div className="hamburger" onClick={toggleMenu}>
           <div className={isOpen ? "bar open" : "bar"}></div>

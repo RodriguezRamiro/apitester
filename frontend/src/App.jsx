@@ -1,5 +1,3 @@
-//src/App.jsx
-
 import { useEffect, useState } from "react";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import Navbar from "./components/Navbar";
@@ -9,7 +7,7 @@ import About from "./pages/About";
 import Contact from "./pages/Contact";
 import "./index.css";
 
-// Page wrapper for transitions
+// PageWrapper for transitions
 function PageWrapper({ children }) {
   const [visible, setVisible] = useState(false);
 
@@ -18,11 +16,7 @@ function PageWrapper({ children }) {
     return () => setVisible(false);
   }, []);
 
-  return (
-    <div className={`page ${visible ? "page-visible" : ""}`}>
-      {children}
-    </div>
-  );
+  return <div className={`page ${visible ? "page-visible" : ""}`}>{children}</div>;
 }
 
 function App() {

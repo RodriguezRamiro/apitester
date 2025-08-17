@@ -1,0 +1,27 @@
+/* // src/components/Notification.jsx */
+
+.notification {
+    position: fixed;
+    top: 1rem;
+    right: 1rem;
+    padding: 1rem 1.5rem;
+    border-radius: 6px;
+    color: white;
+    font-weight: bold;
+    z-index: 999;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.2);
+    animation: slideIn 0.3s ease forwards;
+  }
+
+  .notification.success {
+    background-color: #22c55e;
+  }
+
+  .notification.error {
+    background-color: #ef4444;
+  }
+
+  @keyframes slideIn {
+    from { opacity: 0; transform: translateY(-20px); }
+    to { opacity: 1; transform: translateY(0); }
+  }

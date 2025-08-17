@@ -34,6 +34,31 @@ html, #root {
   text-align: center;
   opacity: 0;
   transform: scale(0.95); animation: fadeInContent 0.6s 0.3s forwards;
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 2rem;
+}
+
+.staggered {
+  opacity: 0;
+  transform: translateY(10px);
+  animation: fadeInUp 0.6s forwards;
+  animation-delay: 0.2s;
+}
+
+.staggered:nth-child(2) { animation-delay: 0.4s; }
+.staggered:nth-child(3) { animation-delay: 0.6s; }
+
+@keyframes fadeInUp {
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* spacing between About text and TodoPreview */
+.page-content > *:not(:last-child) {
+  margin-bottom: 1.5rem;
 }
 
 @keyframes fadeInContent {

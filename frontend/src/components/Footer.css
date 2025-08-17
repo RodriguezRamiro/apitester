@@ -1,12 +1,27 @@
-/* //src/components/footer.css */
+/* src/components/footer.css */
 
+/* Ensure page takes full viewport height */
+html, body {
+  margin: 0;
+  padding: 0;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+/* Main content grows and pushes footer down */
+.main-content {
+  flex: 1 0 auto;
+}
+
+/* Footer styles */
 .footer {
   width: 100%;
   background-color: #111827;
   color: #d1d5db;
   text-align: center;
   padding: 1rem 0;
-  margin-top: auto;
+  margin-top: auto; /* pushes footer to bottom if content is short */
   font-size: 0.9rem;
   border-top: 1px solid #1f2937;
   transition: background-color 0.3s ease;
@@ -15,9 +30,13 @@
   animation: fadeIn 1s 0.5s forwards;
 }
 
-.footer:hover { background-color: #1f2937; }
+.footer:hover {
+  background-color: #1f2937;
+}
 
-.footer p { margin: 0.25rem 0; }
+.footer p {
+  margin: 0.25rem 0;
+}
 
 .footer a {
   color: #00bcd4;
@@ -30,6 +49,7 @@
   transform: translateY(-2px);
 }
 
+/* Fade-in animation */
 @keyframes fadeIn {
   from { opacity: 0; transform: translateY(10px); }
   to { opacity: 1; transform: translateY(0); }

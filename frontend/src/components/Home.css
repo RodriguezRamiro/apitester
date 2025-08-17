@@ -1,0 +1,58 @@
+/* src/components/Home.css */
+
+.home-container {
+    padding: 2rem;
+    font-family: "Inter", sans-serif;
+    color: #f9fafb;
+    background-color: #111827;
+    min-height: 100vh;
+  }
+
+  .home-container h1 {
+    margin-bottom: 2rem;
+    font-size: 2rem;
+    text-align: center;
+  }
+
+  .dashboard {
+    display: flex;
+    gap: 2rem;
+    flex-wrap: wrap; /* allows responsiveness */
+  }
+
+  .left-panel {
+    flex: 1 1 300px; /* grow, shrink, base width */
+    max-width: 400px;
+  }
+
+  .right-panel {
+    flex: 2 1 500px;
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+  }
+
+  /* RequestForm styling */
+  .request-form {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    background-color: #1f2937;
+    padding: 1rem;
+    border-radius: 0.5rem;
+  }
+
+  .request-form input,
+  .request-form select,
+  .request-form textarea {
+    padding: 0.5rem;
+    border-radius: 0.25rem;
+    border: none;
+    background-color: #111827;
+    color: #f9fafb;
+    font-family: inherit;
+  }
+
+  .request-form textarea {
+    resize: vertical;
+  }
