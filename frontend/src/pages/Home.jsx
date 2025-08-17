@@ -53,22 +53,35 @@ export default function Home() {
       method: requestData.method,
       headers: { "Content-Type": "application/json" },
     };
-
-    if (requestData.method !== "GET" && requestData.body) {
+    // Only add body for POST or Patch
+    if (requestData.method === "POST" || requestData.method === "PATCH") {
+      if (requestData.body) {
       try {
-        options.body = JSON.stringify(JSON.parse(requestData.body));
+        // Sanatize input: convert single quotes to double quotes, remove trailing commas
+        let safeBody = requestData.body.replace(/'/g, '""').replace(/,\s*(\}|])/g, '$1');
+        options.body = JSON.stringify(JSON.parse(safeBody));
       } catch {
         setResponse("Error: Invalid JSON body");
         showNotification("error", "Invalid JSON body");
         return;
       }
+    } else {
+      // If body is empty, send an empty object
+      options.body = JSON.stringify({});
     }
+  }
 
     try {
       const res = await fetch(url, options);
       if (!res.ok) throw new Error("Request failed");
       const data = await res.json();
       setResponse(JSON.stringify(data, null, 2));
+      const viewer = document.querySelector(".response-viewer");
+      if (viewer) {
+        viewer.classList.remove("visible");
+        void viewer.offsetWidth; // trigger reflow
+        viewer.classList.add("visible");
+      }
       showNotification("success", `Request ${requestData.method} successful`);
     } catch {
       setResponse("Error: Failed to fetch");
@@ -78,59 +91,69 @@ export default function Home() {
 
   return (
     <div className="home-container">
-      <h1>Live API & Todo Dashboard</h1>
-
       {notification && <Notification type={notification.type} message={notification.message} />}
 
-      <div className="dashboard">
-        <div className="left-panel">
-          <TodoPreview
-            todos={todos}
-            fetchTodos={fetchTodos}
-            showNotification={showNotification}
-          />
-        </div>
+      <div className="page-content-wrapper page-visible">
+        <div className="page-content">
+          <h1>Live API & Todo Dashboard</h1>
 
-        <div className="right-panel">
-          <form className="request-form" onSubmit={sendRequest}>
-            <label>
-              HTTP Method:
-              <select
-                value={requestData.method}
-                onChange={(e) => setRequestData({ ...requestData, method: e.target.value })}
-              >
-                <option>GET</option>
-                <option>POST</option>
-                <option>PATCH</option>
-                <option>DELETE</option>
-              </select>
-            </label>
-
-            <label>
-              Endpoint:
-              <input
-                type="text"
-                value={requestData.endpoint}
-                onChange={(e) => setRequestData({ ...requestData, endpoint: e.target.value })}
+          <div className="dashboard">
+            <div className="left-panel">
+              <TodoPreview
+                todos={todos}
+                fetchTodos={fetchTodos}
+                showNotification={showNotification}
               />
-            </label>
+            </div>
 
-            {(requestData.method === "POST" || requestData.method === "PATCH") && (
-              <label>
-                JSON Body:
-                <textarea
-                  value={requestData.body}
-                  onChange={(e) => setRequestData({ ...requestData, body: e.target.value })}
-                  placeholder='{"text": "New todo"}'
-                />
-              </label>
-            )}
+            <div className="right-panel">
+              <form className="request-form" onSubmit={sendRequest}>
+                <label>
+                  HTTP Method:
+                  <select
+                    value={requestData.method}
+                    onChange={(e) =>
+                      setRequestData({ ...requestData, method: e.target.value })
+                    }
+                  >
+                    <option>GET</option>
+                    <option>POST</option>
+                    <option>PATCH</option>
+                    <option>DELETE</option>
+                  </select>
+                </label>
 
-            <button type="submit">Send Request</button>
-          </form>
+                <label>
+                  Endpoint:
+                  <input
+                    type="text"
+                    value={requestData.endpoint}
+                    onChange={(e) =>
+                      setRequestData({ ...requestData, endpoint: e.target.value })
+                    }
+                  />
+                </label>
 
-          <div className="response-viewer">
-            <pre>{response}</pre>
+                {(requestData.method === "POST" || requestData.method === "PATCH") && (
+                  <label>
+                    JSON Body:
+                    <textarea
+                      value={requestData.body}
+                      onChange={(e) =>
+                        setRequestData({ ...requestData, body: e.target.value })
+                      }
+                      placeholder='{"text": "New todo"}'
+                    />
+                  </label>
+                )}
+
+                <button type="submit">Send Request</button>
+              </form>
+
+              <div className="response-viewer">
+                <pre>{response}</pre>
+              </div>
+            </div>
           </div>
         </div>
       </div>

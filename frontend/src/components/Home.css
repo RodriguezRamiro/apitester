@@ -16,23 +16,35 @@
 
   .dashboard {
     display: flex;
-    gap: 2rem;
+    justify-content: center;
+    gap: 3rem;
     flex-wrap: wrap; /* allows responsiveness */
+    margin-top: 2rem;
   }
 
-  .left-panel {
-    flex: 1 1 300px; /* grow, shrink, base width */
-    max-width: 400px;
+  .left-panel, .right-panel {
+    background-color: #1f2937;
+    padding: 1rem;
+    border-radius: 0.5rem;
+    box-shadow: 0 8px 20px rgba(0,0,0,0.4);
+    transition: transform 0.2s, box-shadow 0.2s;
   }
 
-  .right-panel {
-    flex: 2 1 500px;
-    display: flex;
-    flex-direction: column;
-    gap: 1rem;
+  .left-panel:hover, .right-panel:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 12px 25px rgba(0,0,0,0.5);
   }
+
 
   /* RequestForm styling */
+
+  .request-form label {
+    display: flex;
+    flex-direction: column;
+    text-align: left;
+  }
+
+
   .request-form {
     display: flex;
     flex-direction: column;
@@ -42,17 +54,38 @@
     border-radius: 0.5rem;
   }
 
-  .request-form input,
-  .request-form select,
-  .request-form textarea {
-    padding: 0.5rem;
-    border-radius: 0.25rem;
-    border: none;
-    background-color: #111827;
-    color: #f9fafb;
-    font-family: inherit;
-  }
+ .request-form select,
+.request-form input,
+.request-form textarea,
+.request-form button {
+  width: 100%;
+  box-sizing: border-box;
+  margin-top: 0.25rem;
+}
 
   .request-form textarea {
     resize: vertical;
+  }
+
+
+  /* --- Response Viewer --- */
+.response-viewer {
+    background-color: #111827;
+    border: 1px solid #374151;
+    border-radius: 0.5rem;
+    padding: 1rem;
+    color: #f9fafb;
+    font-family: "Courier New", monospace;
+    white-space: pre-wrap;
+    max-height: 250px;
+    overflow-y: auto;
+    opacity: 0;
+    transform: translateY(10px);
+    transition: opacity 0.4s ease, transform 0.4s ease;
+  }
+
+  /* Trigger visible state dynamically via class */
+  .response-viewer.visible {
+    opacity: 1;
+    transform: translateY(0);
   }

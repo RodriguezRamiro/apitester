@@ -5,7 +5,8 @@
     text-align: left;
     background-color: #1f2937;
     padding: 1rem;
-    border-radius: 0.5rem;
+    border-radius: 12px;
+    box-shadow: 0 8px 20px rgba(0,0,0,0.4);
   }
 
   .input-container {
@@ -16,22 +17,32 @@
 
   .input-container input {
     flex: 1;
-    padding: 0.5rem;
-    border-radius: 0.25rem;
+    padding: 0.5rem 0.75rem;
+    border-radius: 8px;
     border: none;
+    outline: none;
+    background-color: #2c3542;
+    color: white;
+    transition: all 0.3s;
+  }
+
+  .input-container input:focus {
+    box-shadow: 0 0 5px #00bcd4;
   }
 
   .input-container button {
     padding: 0.5rem 1rem;
-    background-color: #00bcd4;
+    background: linear-gradient(90deg, #06b6d4, #0ea5e9);
     border: none;
     color: white;
-    border-radius: 0.25rem;
+    border-radius: 8px;
     cursor: pointer;
+    transition: all 0.3s;
   }
 
   .input-container button:hover {
-    background-color: #0097a7;
+    background: linear-gradient(90deg, #0ea5e9, #06b6d4);
+    transform: translateY(-2px);
   }
 
   ul {
@@ -45,18 +56,20 @@
     justify-content: space-between;
     align-items: center;
     background-color: #1f2937;
-    padding: 0.5rem 1rem;
+    padding: 0.75rem 1rem;
     margin-bottom: 0.5rem;
-    border-radius: 6px;
+    border-radius: 10px;
     cursor: pointer;
     opacity: 1;
     transform: translateY(0);
     transition: all 0.3s ease;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.3);
   }
 
   .todo-preview li.done span {
     text-decoration: line-through;
-    opacity: 0.6;
+  opacity: 0.5;
+  color: #9ca3af; /* faded gray */
   }
 
   .todo-preview li span {
@@ -114,11 +127,12 @@
 
 
   .feedback {
-    padding: 0.5rem 1rem;
+    padding: 0.75rem 1.25rem;
     margin-bottom: 1rem;
-    border-radius: 4px;
+    border-radius: 8px;
     font-weight: bold;
     animation: fadeIn 0.3s ease-in;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.3);
   }
 
   .feedback.success {

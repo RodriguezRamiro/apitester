@@ -1,14 +1,15 @@
-//src/components/TodoPreview.jsx
-
-import React, { useState, useEffect } from "react";
+// src/components/TodoPreview.jsx
+import React, { useState } from "react";
 import "./TodoPreview.css";
 
-export default function TodoPreview({ todos, fetchTodos, showNotification }) {
+export default function TodoPreview({ todos = [], fetchTodos, showNotification }) {
   const [input, setInput] = useState("");
   const [editingId, setEditingId] = useState(null);
   const [editingText, setEditingText] = useState("");
   const [filter, setFilter] = useState("All");
   const [feedback, setFeedback] = useState(null); // local animated feedback
+
+  const safeTodos = Array.isArray(todos) ? todos : []; // ✅ safeguard
 
   const showLocalFeedback = (type, message) => {
     setFeedback({ type, message });
@@ -26,11 +27,11 @@ export default function TodoPreview({ todos, fetchTodos, showNotification }) {
       if (!res.ok) throw new Error();
       setInput("");
       showLocalFeedback("success", "Todo added!");
-      showNotification("success", "Todo added successfully");
-      fetchTodos();
+      showNotification?.("success", "Todo added successfully");
+      fetchTodos?.();
     } catch {
       showLocalFeedback("error", "Failed to add todo");
-      showNotification("error", "Failed to add todo");
+      showNotification?.("error", "Failed to add todo");
     }
   };
 
@@ -38,11 +39,11 @@ export default function TodoPreview({ todos, fetchTodos, showNotification }) {
     try {
       await fetch(`http://127.0.0.1:5000/api/todos/${id}`, { method: "PATCH" });
       showLocalFeedback("success", "Todo updated!");
-      showNotification("success", "Todo updated successfully");
-      fetchTodos();
+      showNotification?.("success", "Todo updated successfully");
+      fetchTodos?.();
     } catch {
       showLocalFeedback("error", "Failed to update");
-      showNotification("error", "Failed to update todo");
+      showNotification?.("error", "Failed to update todo");
     }
   };
 
@@ -50,11 +51,11 @@ export default function TodoPreview({ todos, fetchTodos, showNotification }) {
     try {
       await fetch(`http://127.0.0.1:5000/api/todos/${id}`, { method: "DELETE" });
       showLocalFeedback("success", "Todo deleted!");
-      showNotification("success", "Todo deleted successfully");
-      fetchTodos();
+      showNotification?.("success", "Todo deleted successfully");
+      fetchTodos?.();
     } catch {
       showLocalFeedback("error", "Failed to delete");
-      showNotification("error", "Failed to delete todo");
+      showNotification?.("error", "Failed to delete todo");
     }
   };
 
@@ -74,15 +75,16 @@ export default function TodoPreview({ todos, fetchTodos, showNotification }) {
       setEditingId(null);
       setEditingText("");
       showLocalFeedback("success", "Todo updated!");
-      showNotification("success", "Todo updated successfully");
-      fetchTodos();
+      showNotification?.("success", "Todo updated successfully");
+      fetchTodos?.();
     } catch {
       showLocalFeedback("error", "Failed to update");
-      showNotification("error", "Failed to update todo");
+      showNotification?.("error", "Failed to update todo");
     }
   };
 
-  const filteredTodos = todos.filter((t) => {
+  // ✅ safeguarded filter
+  const filteredTodos = safeTodos.filter((t) => {
     if (filter === "All") return true;
     if (filter === "Completed") return t.done;
     if (filter === "Pending") return !t.done;
@@ -119,7 +121,7 @@ export default function TodoPreview({ todos, fetchTodos, showNotification }) {
 
       <ul>
         {filteredTodos.map((todo) => (
-          <li key={todo.id} className={`${todo.done ? "done" : ""} ${todo.animation}`}>
+          <li key={todo.id} className={`${todo.done ? "done" : ""} ${todo.animation || ""}`}>
             {editingId === todo.id ? (
               <input
                 type="text"

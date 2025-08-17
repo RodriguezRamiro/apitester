@@ -1,4 +1,4 @@
-//src/pages/about.jsx
+// src/pages/about.jsx
 
 import React from "react";
 import TodoPreview from "../components/TodoPreview";
@@ -6,16 +6,19 @@ import TodoPreview from "../components/TodoPreview";
 export default function About() {
   return (
     <div className="page-content">
-      <h1 className="staggered">About This API Tester</h1>
+      <h1 className="staggered">About Pulse Board</h1>
       <p className="staggered">
-        This page is a simple API testing tool. You can interact with backend endpoints,
-        send requests, and see responses in real-time. It started as a small Todo List
-        tester, but now serves as a playground for experimenting with APIs and practicing
-        React + Flask integration.
+        Pulse Board is an interactive API testing and Todo dashboard. It allows you to
+        manage todos, send GET, POST, PATCH, and DELETE requests, and see responses
+        in real-time.
       </p>
       <p className="staggered">
-        Use it to try out GET, POST, PATCH, and DELETE requests, or to preview JSON responses
-        from your backend. This helps you quickly validate endpoints while developing.
+        This project showcases full-stack capabilities with a Flask backend, React frontend,
+        and live WebSocket updates for a polished, real-time user experience.
+      </p>
+      <p className="staggered">
+        Use it to experiment with API endpoints, test data workflows, or simply explore
+        modern frontend-backend integration in action.
       </p>
 
       {/* Embed live TodoPreview component */}
