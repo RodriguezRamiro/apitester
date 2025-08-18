@@ -5,6 +5,7 @@ import Footer from "./components/Footer";
 import Home from "./pages/Home";
 import About from "./pages/About";
 import Contact from "./pages/Contact";
+import { BACKEND_URL } from "./config.js";
 import "./index.css";
 
 // PageWrapper for transitions
@@ -23,10 +24,12 @@ function App() {
   const [message, setMessage] = useState("");
 
   useEffect(() => {
-    fetch("http://127.0.0.1:5000/api/hello")
+    fetch(`${BACKEND_URL}/api/hello`)
       .then((res) => res.json())
-      .then((data) => setMessage(data.message));
+      .then((data) => setMessage(data.message))
+      .catch((err) => console.error("Failed to fetch /api/hello:", err));
   }, []);
+
 
   return (
     <Router>
