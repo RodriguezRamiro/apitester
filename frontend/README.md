@@ -1,12 +1,64 @@
-# React + Vite
+# Apitester - React + Vite
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+Apitester is a full-stack React application built with Vite for fast development and HMR. It provides a live API dashboard, todo management, and request preview functionality.
 
-Currently, two official plugins are available:
+## Features
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+- React 19 + Vite setup with Fast Refresh
+- Live Todo Dashboard integrated with a Python/Flask backend
+- Custom API Request Panel for GET, POST, PATCH, DELETE requests
+- Live WebSocket updates for todos
+- Animated notifications and feedback
+- Automatic version display from `package.json`
+- Ready for Railway deployment
 
-## Expanding the ESLint configuration
+## Frontend Plugins
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+We use [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react-swc) for fast refresh using SWC. Babel-based Fast Refresh is also available via [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react).
+
+## ESLint
+
+This project includes ESLint configuration with React hooks rules. For production applications, consider using TypeScript with type-aware lint rules via [`typescript-eslint`](https://typescript-eslint.io).
+
+## Configuration
+
+- Backend URL is automatically selected based on environment:
+
+```js
+import { BACKEND_URL } from "./config.js";
+
+
+Local development uses http://127.0.0.1:5000
+
+Railway production uses https://apitester-production.up.railway.app
+
+App version is imported from package.json:
+
+Running Locally
+
+Clone the repo:
+
+git clone https://github.com/RodriguezRamiro/apitester.git
+cd apitester/frontend
+
+Install dependencies:
+
+npm install
+
+Start development server:
+
+npm run dev
+
+The app will run at http://localhost:5173 by default.
+
+Deployment
+
+Deployed to Railway using GitHub integration
+
+Railway automatically builds and runs the backend with Python 3.11
+
+Automatic versioning displayed in footer
+
+License
+
+© 2025 Ramiro Rodriguez Alvarez — All rights reserved. Version is automatically updated from package.json.

@@ -22,21 +22,39 @@ function PageWrapper({ children }) {
 
 function App() {
   const [message, setMessage] = useState("");
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    fetch(`${BACKEND_URL}/api/hello`)
-      .then((res) => res.json())
-      .then((data) => setMessage(data.message))
-      .catch((err) => console.error("Failed to fetch /api/hello:", err));
-  }, []);
+    const fetchMessage = async () => {
+      try {
+        const res = await fetch(`${BACKEND_URL}/api/hello`);
+        if (!res.ok) throw new Error(`HTTP ${res.status}`);
+        const data = await res.json();
+        setMessage(data?.message || "No message from backend");
+      } catch (err) {
+        console.error("Failed to fetch /api/hello:", err);
+        setMessage("Unable to reach backend");
+      } finally {
+        setLoading(false);
+      }
+    };
 
+    fetchMessage();
+  }, []);
 
   return (
     <Router>
       <div className="app-container">
         <Navbar />
         <Routes>
-          <Route path="/" element={<PageWrapper><Home message={message} /></PageWrapper>} />
+          <Route
+            path="/"
+            element={
+              <PageWrapper>
+                <Home message={message} loading={loading} />
+              </PageWrapper>
+            }
+          />
           <Route path="/about" element={<PageWrapper><About /></PageWrapper>} />
           <Route path="/contact" element={<PageWrapper><Contact /></PageWrapper>} />
         </Routes>

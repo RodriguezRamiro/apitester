@@ -7,7 +7,7 @@ import socket from "../socket";
 import { BACKEND_URL } from "../config.js";
 import "../components/Home.css";
 
-export default function Home() {
+export default function Home({ message, loading }) {
   const [response, setResponse] = useState("");
   const [requestData, setRequestData] = useState({
     method: "GET",
@@ -30,7 +30,8 @@ export default function Home() {
       if (!res.ok) throw new Error("Failed to fetch todos");
       const data = await res.json();
       setTodos(data.map((t, i) => ({ ...t, animation: "stable", delay: i * 0.1 })));
-    } catch {
+    } catch (err) {
+      console.error("Failed to fetch todos:", err);
       showNotification("error", "Failed to load todos");
     }
   };
@@ -38,12 +39,10 @@ export default function Home() {
   useEffect(() => {
     fetchTodos();
 
-    // Listen to live updates
+    // Live updates
     socket.on("todos_updated", (updatedTodos) => {
       setTodos(updatedTodos.map((t, i) => ({ ...t, animation: "stable", delay: i * 0.1 })));
     });
-
-    // Clean up listener
     return () => socket.off("todos_updated");
   }, []);
 
@@ -54,38 +53,45 @@ export default function Home() {
       method: requestData.method,
       headers: { "Content-Type": "application/json" },
     };
-    // Only add body for POST or Patch
-    if (requestData.method === "POST" || requestData.method === "PATCH") {
-      if (requestData.body) {
-      try {
-        // Sanatize input: convert single quotes to double quotes, remove trailing commas
-        let safeBody = requestData.body.replace(/'/g, '""').replace(/,\s*(\}|])/g, '$1');
-        options.body = JSON.stringify(JSON.parse(safeBody));
-      } catch {
-        setResponse("Error: Invalid JSON body");
-        showNotification("error", "Invalid JSON body");
-        return;
+
+    if (["POST", "PATCH"].includes(requestData.method)) {
+      if (requestData.body.trim()) {
+        try {
+          options.body = JSON.stringify(JSON.parse(requestData.body));
+        } catch {
+          setResponse("Error: Invalid JSON body");
+          showNotification("error", "Invalid JSON body");
+          return;
+        }
+      } else {
+        options.body = JSON.stringify({});
       }
-    } else {
-      // If body is empty, send an empty object
-      options.body = JSON.stringify({});
     }
-  }
 
     try {
       const res = await fetch(url, options);
-      if (!res.ok) throw new Error("Request failed");
+      if (!res.ok) throw new Error(`HTTP ${res.status}`);
+
+      const contentType = res.headers.get("content-type");
+      if (!contentType || !contentType.includes("application/json")) {
+        throw new Error("Invalid response: expected JSON");
+      }
+
       const data = await res.json();
       setResponse(JSON.stringify(data, null, 2));
+
+      // Animate response viewer
       const viewer = document.querySelector(".response-viewer");
       if (viewer) {
         viewer.classList.remove("visible");
-        void viewer.offsetWidth; // trigger reflow
+        void viewer.offsetWidth;
         viewer.classList.add("visible");
       }
+
       showNotification("success", `Request ${requestData.method} successful`);
-    } catch {
-      setResponse("Error: Failed to fetch");
+    } catch (err) {
+      console.error("Request error:", err);
+      setResponse(`Error: ${err.message}`);
       showNotification("error", `Request ${requestData.method} failed`);
     }
   };
@@ -93,64 +99,41 @@ export default function Home() {
   return (
     <div className="home-container">
       {notification && <Notification type={notification.type} message={notification.message} />}
-
       <div className="page-content-wrapper page-visible">
         <div className="page-content">
           <h1>Live API & Todo Dashboard</h1>
-
+          {loading && <p>Loading backend message: {message}</p>}
           <div className="dashboard">
             <div className="left-panel">
-              <TodoPreview
-                todos={todos}
-                fetchTodos={fetchTodos}
-                showNotification={showNotification}
-              />
+              <TodoPreview todos={todos} fetchTodos={fetchTodos} showNotification={showNotification} />
             </div>
-
             <div className="right-panel">
               <form className="request-form" onSubmit={sendRequest}>
                 <label>
                   HTTP Method:
-                  <select
-                    value={requestData.method}
-                    onChange={(e) =>
-                      setRequestData({ ...requestData, method: e.target.value })
-                    }
-                  >
+                  <select value={requestData.method} onChange={(e) =>
+                    setRequestData({ ...requestData, method: e.target.value })}>
                     <option>GET</option>
                     <option>POST</option>
                     <option>PATCH</option>
                     <option>DELETE</option>
                   </select>
                 </label>
-
                 <label>
                   Endpoint:
-                  <input
-                    type="text"
-                    value={requestData.endpoint}
-                    onChange={(e) =>
-                      setRequestData({ ...requestData, endpoint: e.target.value })
-                    }
-                  />
+                  <input type="text" value={requestData.endpoint} onChange={(e) =>
+                    setRequestData({ ...requestData, endpoint: e.target.value })} />
                 </label>
-
-                {(requestData.method === "POST" || requestData.method === "PATCH") && (
+                {["POST", "PATCH"].includes(requestData.method) && (
                   <label>
                     JSON Body:
-                    <textarea
-                      value={requestData.body}
-                      onChange={(e) =>
-                        setRequestData({ ...requestData, body: e.target.value })
-                      }
-                      placeholder='{"text": "New todo"}'
-                    />
+                    <textarea value={requestData.body} onChange={(e) =>
+                      setRequestData({ ...requestData, body: e.target.value })}
+                      placeholder='{"text": "New todo"}' />
                   </label>
                 )}
-
                 <button type="submit">Send Request</button>
               </form>
-
               <div className="response-viewer">
                 <pre>{response}</pre>
               </div>
