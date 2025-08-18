@@ -2,12 +2,19 @@
 
 from flask import Flask, jsonify, request
 from flask_cors import CORS
+import os
 from flask_socketio import SocketIO, emit
+import eventlet
+import eventlet.wsgi
 
+# Initialize Flask app
 app = Flask(__name__)
 CORS(app, resources={r"/api/*": {"origins": "*"}})
-socketio = SocketIO(app, cors_allowed_origins="*")  # enable WebSocket
 
+# Setup WebSocket
+socketio = SocketIO(app, cors_allowed_origins="*")
+
+# Store todos in memory (temporary)
 todos = []
 
 # --- API Routes ---
@@ -52,10 +59,18 @@ def delete_todo(todo_id):
     socketio.emit("todos_updated", todos)
     return jsonify({"message": "Deleted"})
 
-# --- Socket.IO ---
+# --- WebSocket Events ---
 @socketio.on("connect")
 def handle_connect():
-    emit("todos_updated", todos)
+    print("Client connected")
+    emit("init", todos)
 
+@socketio.on("disconnect")
+def handle_disconnect():
+    print("Client disconnected")
+
+# --- Run the App ---
 if __name__ == "__main__":
-    socketio.run(app, debug=True, host="0.0.0.0", port=5000)
+    port = int(os.environ.get("PORT", 5000))
+    socketio.run(app, debug=False, host="0.0.0.0", port=port, use_reloader=False)
+
