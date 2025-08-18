@@ -10,14 +10,30 @@ export default function RequestForm({ setResponse }) {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
+      const url = endpoint.startsWith("http")
+        ? endpoint
+        : `${BACKEND_URL}${endpoint}`;
+
       const options = { method };
+
       if (method !== "GET" && body) {
         options.headers = { "Content-Type": "application/json" };
-        options.body = body;
+        try {
+          options.body = JSON.stringify(JSON.parse(body)); // validate JSON
+        } catch (err) {
+          return setResponse({ error: "Invalid JSON body" });
+        }
       }
 
       const res = await fetch(url, options);
-      const data = await res.json();
+
+      let data;
+      try {
+        data = await res.json();
+      } catch {
+        data = await res.text(); // fallback if not JSON
+      }
+
       setResponse({ data, status: res.status });
     } catch (err) {
       setResponse({ error: err.message });

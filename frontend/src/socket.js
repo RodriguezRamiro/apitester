@@ -1,5 +1,9 @@
 //src/socket.js
 
 import { io } from "socket.io-client";
-const socket = io("http://127.0.0.1:5000");
+import { BACKEND_URL } from "./config.js";
+
+// Use the BACKEND_URL dynamically
+const socket = io(BACKEND_URL);
+
 export default socket;

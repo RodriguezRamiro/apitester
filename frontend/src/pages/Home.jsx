@@ -4,6 +4,7 @@ import React, { useState, useEffect } from "react";
 import TodoPreview from "../components/TodoPreview";
 import Notification from "../components/Notification";
 import socket from "../socket";
+import { BACKEND_URL } from "../config.js";
 import "../components/Home.css";
 
 export default function Home() {
@@ -25,7 +26,7 @@ export default function Home() {
   // Fetch todos once on mount
   const fetchTodos = async () => {
     try {
-      const res = await fetch("http://127.0.0.1:5000/api/todos");
+      const res = await fetch(`${BACKEND_URL}/api/todos`);
       if (!res.ok) throw new Error("Failed to fetch todos");
       const data = await res.json();
       setTodos(data.map((t, i) => ({ ...t, animation: "stable", delay: i * 0.1 })));
@@ -48,7 +49,7 @@ export default function Home() {
 
   const sendRequest = async (e) => {
     e.preventDefault();
-    const url = `http://127.0.0.1:5000${requestData.endpoint}`;
+    const url = `${BACKEND_URL}${requestData.endpoint}`;
     const options = {
       method: requestData.method,
       headers: { "Content-Type": "application/json" },

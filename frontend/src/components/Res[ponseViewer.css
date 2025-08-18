@@ -1,0 +1,41 @@
+/* src/components/ResponseViewer.css */
+
+.response-viewer {
+    background: #1e1e2f;      /* dark panel */
+    color: #f0f0f0;           /* light text */
+    padding: 1rem;
+    border-radius: 12px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+    font-family: "Fira Code", monospace;
+    max-height: 400px;
+    overflow-y: auto;
+    margin-top: 1rem;
+  }
+
+  .response-viewer h3 {
+    margin-bottom: 0.5rem;
+    font-size: 1.2rem;
+    color: #ffcc00;          /* accent title color */
+  }
+
+  .response-status {
+    margin-bottom: 0.5rem;
+    font-weight: bold;
+    color: #00d1b2;          /* greenish status */
+  }
+
+  .response-error {
+    color: #ff4c4c;          /* red for errors */
+    font-weight: bold;
+    margin-bottom: 0.5rem;
+  }
+
+  .response-json {
+    background: #2a2a3f;
+    padding: 0.75rem;
+    border-radius: 8px;
+    font-size: 0.9rem;
+    overflow-x: auto;
+    white-space: pre-wrap;
+    word-wrap: break-word;
+  }
