@@ -4,6 +4,7 @@ import React, { useState, useEffect } from "react";
 import TodoPreview from "../components/TodoPreview";
 import Notification from "../components/Notification";
 import socket from "../socket";
+import { getTodos } from "../api";
 import { BACKEND_URL } from "../config.js";
 import "../components/Home.css";
 
@@ -26,9 +27,7 @@ export default function Home({ message, loading }) {
   // Fetch todos once on mount
   const fetchTodos = async () => {
     try {
-      const res = await fetch(`${BACKEND_URL}/api/todos`);
-      if (!res.ok) throw new Error("Failed to fetch todos");
-      const data = await res.json();
+      const data = await getTodos();   // 👈 call api.js
       setTodos(data.map((t, i) => ({ ...t, animation: "stable", delay: i * 0.1 })));
     } catch (err) {
       console.error("Failed to fetch todos:", err);
@@ -39,16 +38,17 @@ export default function Home({ message, loading }) {
   useEffect(() => {
     fetchTodos();
 
-    // Live updates
+    // Live updates with sockets
     socket.on("todos_updated", (updatedTodos) => {
       setTodos(updatedTodos.map((t, i) => ({ ...t, animation: "stable", delay: i * 0.1 })));
     });
     return () => socket.off("todos_updated");
   }, []);
 
+  // API tester playground - raw fetch
   const sendRequest = async (e) => {
     e.preventDefault();
-    const url = `${BACKEND_URL}${requestData.endpoint}`;
+    const url = `${import.meta.env.VITE_BACKEND_URL}${requestData.endpoint}`;
     const options = {
       method: requestData.method,
       headers: { "Content-Type": "application/json" },

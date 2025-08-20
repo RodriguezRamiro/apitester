@@ -1,7 +1,7 @@
 // src/components/TodoPreview.jsx
 
 import React, { useState } from "react";
-import { BACKEND_URL } from "../config";
+import { createTodo, updateTodo, deleteTodo } from "../api";
 import "./TodoPreview.css";
 
 export default function TodoPreview({ todos = [], fetchTodos, showNotification }) {
@@ -22,12 +22,7 @@ export default function TodoPreview({ todos = [], fetchTodos, showNotification }
   const addTodo = async () => {
     if (!input.trim()) return showLocalFeedback("error", "Cannot add empty todo");
     try {
-      const res = await fetch(`${BACKEND_URL}/api/todos`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ text: input }),
-      });
-      if (!res.ok) throw new Error();
+      await createTodo({ text: input });
       setInput("");
       showLocalFeedback("success", "Todo added!");
       showNotification?.("success", "Todo added successfully");
@@ -41,10 +36,7 @@ export default function TodoPreview({ todos = [], fetchTodos, showNotification }
     // toggle done status
   const toggleDone = async (id) => {
     try {
-      await fetch(`${BACKEND_URL}/api/todos/${id}`, {
-        method: "PATCH",
-        headers: { "Content-Type": "application/json" }
-    });
+      await updateTodo(id, {});
       showLocalFeedback("success", "Todo updated!");
       showNotification?.("success", "Todo updated successfully");
       fetchTodos?.();
@@ -57,7 +49,7 @@ export default function TodoPreview({ todos = [], fetchTodos, showNotification }
   // delete todo
   const deleteTodo = async (id) => {
     try {
-      await fetch(`${BACKEND_URL}/api/todos/${id}`, { method: "DELETE" });
+      await deleteTodo(id);
       showLocalFeedback("success", "Todo deleted!");
       showNotification?.("success", "Todo deleted successfully");
       fetchTodos?.();
@@ -75,11 +67,7 @@ export default function TodoPreview({ todos = [], fetchTodos, showNotification }
   const saveEdit = async (id) => {
     if (!editingText.trim()) return showLocalFeedback("error", "Todo cannot be empty");
     try {
-      await fetch(`${BACKEND_URL}/api/todos/${id}`, {
-        method: "PATCH",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ text: editingText }),
-      });
+      await updateTodo(id, { text: editingText });
       setEditingId(null);
       setEditingText("");
       showLocalFeedback("success", "Todo updated!");
