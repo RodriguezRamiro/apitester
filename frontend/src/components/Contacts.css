@@ -1,0 +1,29 @@
+/* src/components/Contacts.css */
+
+.contacts-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 2rem;
+  }
+
+  .contacts-links {
+    display: flex;
+    gap: 1.5rem;
+    margin: 1rem 0;
+  }
+
+  .contact-link {
+    color: var(--primary-color);
+    transition: transform 0.2s, color 0.2s;
+  }
+
+  .contact-link:hover {
+    transform: scale(1.2);
+    color: var(--accent-color);
+  }
+
+  .contacts-email {
+    margin-top: 1rem;
+    font-weight: 500;
+  }

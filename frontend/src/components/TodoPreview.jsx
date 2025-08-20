@@ -19,10 +19,10 @@ export default function TodoPreview({ todos = [], fetchTodos, showNotification }
   };
 
   // add todo
-  const addTodo = async () => {
+  const handleAddTodo = async () => {
     if (!input.trim()) return showLocalFeedback("error", "Cannot add empty todo");
     try {
-      await addTodo({ text: input });
+      await addTodo(input);
       setInput("");
       showLocalFeedback("success", "Todo added!");
       showNotification?.("success", "Todo added successfully");
@@ -100,7 +100,7 @@ export default function TodoPreview({ todos = [], fetchTodos, showNotification }
           placeholder="Add a task..."
           onChange={(e) => setInput(e.target.value)}
         />
-        <button onClick={addTodo}>Add</button>
+        <button onClick={handleAddTodo}>Add</button>
       </div>
 
       <div className="filter-buttons">
