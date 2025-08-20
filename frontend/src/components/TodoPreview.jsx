@@ -1,7 +1,7 @@
 // src/components/TodoPreview.jsx
 
 import React, { useState } from "react";
-import { createTodo, updateTodo, deleteTodo } from "../api";
+import { addTodo, updateTodo, deleteTodo } from "../api";
 import "./TodoPreview.css";
 
 export default function TodoPreview({ todos = [], fetchTodos, showNotification }) {
@@ -22,7 +22,7 @@ export default function TodoPreview({ todos = [], fetchTodos, showNotification }
   const addTodo = async () => {
     if (!input.trim()) return showLocalFeedback("error", "Cannot add empty todo");
     try {
-      await createTodo({ text: input });
+      await addTodo({ text: input });
       setInput("");
       showLocalFeedback("success", "Todo added!");
       showNotification?.("success", "Todo added successfully");
