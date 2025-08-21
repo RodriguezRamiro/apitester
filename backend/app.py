@@ -1,5 +1,8 @@
 # ./backend/app.py
 
+import eventlet
+eventlet.monkey_patch()
+
 from flask import Flask, jsonify, request
 from flask_cors import CORS
 import os
@@ -9,10 +12,13 @@ import eventlet.wsgi
 
 # Initialize Flask app
 app = Flask(__name__)
-CORS(app, resources={r"/api/*": {"origins": "*"}})
 
-# Setup WebSocket
-socketio = SocketIO(app, cors_allowed_origins="*")
+# Apply CORS to ALL routes (REST + WebSocket)
+CORS(app, resources={r"/*": {"origins": "*"}})
+
+# Setup WebSocket (force eventlet mode)
+socketio = SocketIO(app, cors_allowed_origins="*", async_mode="eventlet")
+
 
 # Store todos in memory (temporary)
 todos = []
@@ -73,4 +79,3 @@ def handle_disconnect():
 if __name__ == "__main__":
     port = int(os.environ.get("PORT", 5000))
     socketio.run(app, debug=False, host="0.0.0.0", port=port, use_reloader=False)
-

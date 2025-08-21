@@ -57,7 +57,7 @@ export default function Home({ message, loading }) {
     e.preventDefault();
 
     // Determine the base URL: use VITE_BACKEND_URL if defined, otherwise relative path for dev proxy
-  const baseURL = import.meta.env.VITE_BACKEND_URL || "";
+  const baseURL = import.meta.env.VITE_BACKEND_URL || "http://localhost:5000";
   const url = `${baseURL}${requestData.endpoint}`;
 
   const options = {
