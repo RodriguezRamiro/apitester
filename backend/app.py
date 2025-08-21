@@ -1,24 +1,28 @@
 # ./backend/app.py
 
-import eventlet
-eventlet.monkey_patch()
-
+import os
 from flask import Flask, jsonify, request
 from flask_cors import CORS
-import os
 from flask_socketio import SocketIO, emit
 import eventlet
-import eventlet.wsgi
+
+# Patch standard library for eventlet
+eventlet.monkey_patch()
 
 # Initialize Flask app
 app = Flask(__name__)
 
 # Apply CORS to ALL routes (REST + WebSocket)
-CORS(app, resources={r"/*": {"origins": "*"}})
+FRONTEND_URL = "https://apitester-fawn.vercel.app"  # Replace with your Vercel frontend
+CORS(app, resources={r"/*": {"origins": FRONTEND_URL}}, supports_credentials=True)
+
 
 # Setup WebSocket (force eventlet mode)
-socketio = SocketIO(app, cors_allowed_origins="*", async_mode="eventlet")
-
+socketio = SocketIO(
+    app,
+    cors_allowed_origins=[FRONTEND_URL],
+    async_mode="eventlet"
+)
 
 # Store todos in memory (temporary)
 todos = []
@@ -34,7 +38,7 @@ def add_todo():
     if "text" in data:
         todo = {"text": data["text"], "done": False, "id": len(todos)}
         todos.append(todo)
-        socketio.emit("todos_updated", todos)  # notify all clients
+        socketio.emit("todos_updated", todos)
         return jsonify(todo), 201
     return jsonify({"error": "Missing text"}), 400
 
@@ -78,4 +82,7 @@ def handle_disconnect():
 # --- Run the App ---
 if __name__ == "__main__":
     port = int(os.environ.get("PORT", 5000))
-    socketio.run(app, debug=False, host="0.0.0.0", port=port, use_reloader=False)
+    print(f"Starting server on port {port}...")
+
+    # Run with eventlet WSGI server for production
+    eventlet.wsgi.server(eventlet.listen(("0.0.0.0", port)), app)
