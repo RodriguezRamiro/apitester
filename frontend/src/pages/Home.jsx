@@ -5,7 +5,6 @@ import TodoPreview from "../components/TodoPreview";
 import Notification from "../components/Notification";
 import socket from "../socket";
 import { getTodos } from "../api";
-import { BACKEND_URL } from "../config.js";
 import "../components/Home.css";
 
 export default function Home({ message, loading }) {
@@ -27,7 +26,7 @@ export default function Home({ message, loading }) {
   // Fetch todos once on mount
   const fetchTodos = async () => {
     try {
-      const data = await getTodos();   // 👈 call api.js
+      const data = await getTodos();
       setTodos(data.map((t, i) => ({ ...t, animation: "stable", delay: i * 0.1 })));
     } catch (err) {
       console.error("Failed to fetch todos:", err);
@@ -35,66 +34,92 @@ export default function Home({ message, loading }) {
     }
   };
 
+  // Initial fetch and socket load
   useEffect(() => {
-    fetchTodos();
+    fetchTodos(); // initial load
 
-    // Live updates with sockets
+    socket.on("init", (initTodos) => {
+      setTodos(initTodos.map((t, i) => ({ ...t, animation: "stable", delay: i * 0.1 })));
+    });
+
     socket.on("todos_updated", (updatedTodos) => {
       setTodos(updatedTodos.map((t, i) => ({ ...t, animation: "stable", delay: i * 0.1 })));
     });
-    return () => socket.off("todos_updated");
+
+    return () => {
+      socket.off("init");
+      socket.off("todos_updated");
+    };
   }, []);
 
   // API tester playground - raw fetch
   const sendRequest = async (e) => {
     e.preventDefault();
-    const url = `${import.meta.env.VITE_BACKEND_URL}${requestData.endpoint}`;
-    const options = {
+
+    // Determine the base URL: use VITE_BACKEND_URL if defined, otherwise relative path for dev proxy
+  const baseURL = import.meta.env.VITE_BACKEND_URL || "";
+  const url = `${baseURL}${requestData.endpoint}`;
+
+  const options = {
       method: requestData.method,
       headers: { "Content-Type": "application/json" },
     };
 
-    if (["POST", "PATCH"].includes(requestData.method)) {
-      if (requestData.body.trim()) {
-        try {
-          options.body = JSON.stringify(JSON.parse(requestData.body));
-        } catch {
-          setResponse("Error: Invalid JSON body");
-          showNotification("error", "Invalid JSON body");
-          return;
-        }
-      } else {
-        options.body = JSON.stringify({});
+    // Add body for POST/PATCH
+  if (["POST", "PATCH"].includes(requestData.method)) {
+    if (requestData.body.trim()) {
+      try {
+        options.body = JSON.stringify(JSON.parse(requestData.body));
+      } catch {
+        setResponse("Error: Invalid JSON body");
+        showNotification("error", "Invalid JSON body");
+        return;
+      }
+    } else {
+      options.body = JSON.stringify({});
+    }
+  }
+
+  try {
+    const res = await fetch(url, options);
+
+    if (!res.ok) throw new Error(`HTTP ${res.status}`);
+
+    let data;
+    const contentType = res.headers.get("content-type");
+
+    if (contentType && contentType.includes("application/json")) {
+      data = await res.json();
+    } else {
+      // fallback: try to parse text if JSON fails
+      const text = await res.text();
+      try {
+        data = JSON.parse(text);
+      } catch {
+        data = text; // just raw text
       }
     }
 
-    try {
-      const res = await fetch(url, options);
-      if (!res.ok) throw new Error(`HTTP ${res.status}`);
+    setResponse(JSON.stringify(data, null, 2));
 
-      const contentType = res.headers.get("content-type");
-      if (!contentType || !contentType.includes("application/json")) {
-        throw new Error("Invalid response: expected JSON");
-      }
-
-      const data = await res.json();
-      setResponse(JSON.stringify(data, null, 2));
+    // Refresh dashboard todos after request
+    fetchTodos();
 
       // Animate response viewer
-      const viewer = document.querySelector(".response-viewer");
-      if (viewer) {
-        viewer.classList.remove("visible");
-        void viewer.offsetWidth;
-        viewer.classList.add("visible");
-      }
-
-      showNotification("success", `Request ${requestData.method} successful`);
-    } catch (err) {
-      console.error("Request error:", err);
-      setResponse(`Error: ${err.message}`);
-      showNotification("error", `Request ${requestData.method} failed`);
+    const viewer = document.querySelector(".response-viewer");
+    if (viewer) {
+      viewer.classList.remove("visible");
+      void viewer.offsetWidth;
+      viewer.classList.add("visible");
     }
-  };
+
+    showNotification("success", `Request ${requestData.method} successful`);
+  } catch (err) {
+    console.error("Request error:", err);
+    setResponse(`Error: ${err.message}`);
+    showNotification("error", `Request ${requestData.method} failed`);
+  }
+}
 
   return (
     <div className="home-container">
@@ -105,14 +130,22 @@ export default function Home({ message, loading }) {
           {loading && <p>Loading backend message: {message}</p>}
           <div className="dashboard">
             <div className="left-panel">
-              <TodoPreview todos={todos} fetchTodos={fetchTodos} showNotification={showNotification} />
+              <TodoPreview
+                todos={todos}
+                fetchTodos={fetchTodos}
+                showNotification={showNotification}
+              />
             </div>
             <div className="right-panel">
               <form className="request-form" onSubmit={sendRequest}>
                 <label>
                   HTTP Method:
-                  <select value={requestData.method} onChange={(e) =>
-                    setRequestData({ ...requestData, method: e.target.value })}>
+                  <select
+                    value={requestData.method}
+                    onChange={(e) =>
+                      setRequestData({ ...requestData, method: e.target.value })
+                    }
+                  >
                     <option>GET</option>
                     <option>POST</option>
                     <option>PATCH</option>
@@ -121,15 +154,24 @@ export default function Home({ message, loading }) {
                 </label>
                 <label>
                   Endpoint:
-                  <input type="text" value={requestData.endpoint} onChange={(e) =>
-                    setRequestData({ ...requestData, endpoint: e.target.value })} />
+                  <input
+                    type="text"
+                    value={requestData.endpoint}
+                    onChange={(e) =>
+                      setRequestData({ ...requestData, endpoint: e.target.value })
+                    }
+                  />
                 </label>
                 {["POST", "PATCH"].includes(requestData.method) && (
                   <label>
                     JSON Body:
-                    <textarea value={requestData.body} onChange={(e) =>
-                      setRequestData({ ...requestData, body: e.target.value })}
-                      placeholder='{"text": "New todo"}' />
+                    <textarea
+                      value={requestData.body}
+                      onChange={(e) =>
+                        setRequestData({ ...requestData, body: e.target.value })
+                      }
+                      placeholder='{"text": "New todo"}'
+                    />
                   </label>
                 )}
                 <button type="submit">Send Request</button>

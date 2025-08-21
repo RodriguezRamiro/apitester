@@ -27,12 +27,12 @@ function App() {
   useEffect(() => {
     const fetchMessage = async () => {
       try {
-        const res = await fetch(`${BACKEND_URL}/api/hello`);
+        const res = await fetch(`${BACKEND_URL}/api/todos`);
         if (!res.ok) throw new Error(`HTTP ${res.status}`);
         const data = await res.json();
         setMessage(data?.message || "No message from backend");
       } catch (err) {
-        console.error("Failed to fetch /api/hello:", err);
+        console.error("Failed to fetch /api/todos:", err);
         setMessage("Unable to reach backend");
       } finally {
         setLoading(false);

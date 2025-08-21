@@ -1,7 +1,7 @@
 // src/components/TodoPreview.jsx
 
 import React, { useState } from "react";
-import { addTodo, updateTodo, deleteTodo } from "../api";
+import { addTodo, updateTodo, deleteTodo as deleteTodoApi } from "../api";
 import "./TodoPreview.css";
 
 export default function TodoPreview({ todos = [], fetchTodos, showNotification }) {
@@ -34,9 +34,9 @@ export default function TodoPreview({ todos = [], fetchTodos, showNotification }
   };
 
     // toggle done status
-  const toggleDone = async (id) => {
+  const toggleDone = async (id, done) => {
     try {
-      await updateTodo(id, {});
+      await updateTodo(id, { done: !done });
       showLocalFeedback("success", "Todo updated!");
       showNotification?.("success", "Todo updated successfully");
       fetchTodos?.();
@@ -47,9 +47,9 @@ export default function TodoPreview({ todos = [], fetchTodos, showNotification }
   };
 
   // delete todo
-  const deleteTodo = async (id) => {
+  const handleDeleteTodo = async (id) => {
     try {
-      await deleteTodo(id);
+      await deleteTodoApi(id);
       showLocalFeedback("success", "Todo deleted!");
       showNotification?.("success", "Todo deleted successfully");
       fetchTodos?.();
@@ -129,13 +129,13 @@ export default function TodoPreview({ todos = [], fetchTodos, showNotification }
               />
             ) : (
               <span
-                onClick={() => toggleDone(todo.id)}
+                onClick={() => toggleDone(todo.id, todo.done)}
                 onDoubleClick={() => startEditing(todo.id, todo.text)}
               >
                 {todo.text}
               </span>
             )}
-            <button onClick={(e) => { e.stopPropagation(); deleteTodo(todo.id); }}>✕</button>
+            <button onClick={(e) => { e.stopPropagation(); handleDeleteTodo(todo.id); }}>✕</button>
           </li>
         ))}
       </ul>
