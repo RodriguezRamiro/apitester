@@ -1,13 +1,15 @@
 # ./backend/app.py
+import eventlet
+# Patch standard library for eventlet
+eventlet.monkey_patch()
 
 import os
 from flask import Flask, jsonify, request
 from flask_cors import CORS
 from flask_socketio import SocketIO, emit
-import eventlet
 
-# Patch standard library for eventlet
-eventlet.monkey_patch()
+
+
 
 # Initialize Flask app
 app = Flask(__name__)
