@@ -82,7 +82,4 @@ def handle_disconnect():
 # --- Run the App ---
 if __name__ == "__main__":
     port = int(os.environ.get("PORT", 5000))
-    print(f"Starting server on port {port}...")
-
-    # Run with eventlet WSGI server for production
-    eventlet.wsgi.server(eventlet.listen(("0.0.0.0", port)), app)
+    socketio.run(app, host="0.0.0.0", port=port)
