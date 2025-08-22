@@ -3,9 +3,9 @@
 import { io } from "socket.io-client";
 import { BACKEND_URL } from "./config.js";
 
-// Use the BACKEND_URL dynamically
+// Use the BACKEND_URL
 const socket = io(BACKEND_URL, {
-    transports: ["websocket", "polling"],
+    transports: ["websocket"],
     withCredentials: true,
 });
 
