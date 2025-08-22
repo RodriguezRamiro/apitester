@@ -27,6 +27,10 @@ socketio = SocketIO(app, cors_allowed_origins=FRONTEND_URLS, async_mode="eventle
 # Store todos in memory (temporary)
 todos = []
 
+@app.route("/")
+def home():
+    return "🟢 API is running!!", 200
+
 # --- API Routes ---
 @app.route("/api/todos", methods=["GET"])
 def get_todos():
