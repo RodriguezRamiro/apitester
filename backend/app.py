@@ -15,16 +15,14 @@ from flask_socketio import SocketIO, emit
 app = Flask(__name__)
 
 # Apply CORS to ALL routes (REST + WebSocket)
-FRONTEND_URL = "https://apitester-fawn.vercel.app"  # Replace with your Vercel frontend
-CORS(app, resources={r"/*": {"origins": FRONTEND_URL}}, supports_credentials=True)
-
+FRONTEND_URLS = [
+    "https://apitester-fawn.vercel.app",
+    "http://localhost:3000"
+]
+CORS(app, resources={r"/*": {"origins": FRONTEND_URLS}}, supports_credentials=True)
 
 # Setup WebSocket (force eventlet mode)
-socketio = SocketIO(
-    app,
-    cors_allowed_origins=[FRONTEND_URL],
-    async_mode="eventlet"
-)
+socketio = SocketIO(app, cors_allowed_origins=FRONTEND_URLS, async_mode="eventlet")
 
 # Store todos in memory (temporary)
 todos = []
@@ -84,4 +82,5 @@ def handle_disconnect():
 # --- Run the App ---
 if __name__ == "__main__":
     port = int(os.environ.get("PORT", 5000))
+    print(f"🚀 Server starting on 0.0.0.0:{port} with eventlet")
     socketio.run(app, host="0.0.0.0", port=port)
