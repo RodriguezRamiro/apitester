@@ -28,7 +28,7 @@ socketio = SocketIO(
     app,
     cors_allowed_origins=[
         r"https:\/\/.*\.vercel\.app",
-        "https://apitester-fawn.vercel.app",
+        "https://*.vercel.app",
         "http://localhost:3000"
     ],
     async_mode="eventlet"
