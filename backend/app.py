@@ -17,6 +17,7 @@ app = Flask(__name__)
 # Apply CORS to ALL routes (REST + WebSocket)
 FRONTEND_URLS = [
     "https://apitester-fawn.vercel.app",
+    "https://apitester-o4t1vrpin-rodriguezramiros-projects.vercel.app",
     "http://localhost:3000"
 ]
 CORS(app, resources={r"/*": {"origins": FRONTEND_URLS}}, supports_credentials=True)
