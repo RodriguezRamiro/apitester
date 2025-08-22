@@ -16,14 +16,22 @@ app = Flask(__name__)
 
 # Apply CORS to ALL routes (REST + WebSocket)
 FRONTEND_URLS = [
-    "https://apitester-fawn.vercel.app",
-    "https:*.vercel.app",
-    "http://localhost:3000"
+    "https://apitester-fawn.vercel.app",          # Production domain
+    re.compile(r"^https:\/\/.*\.vercel\.app$"),  # All Vercel preview deploys
+    "http://localhost:3000"                       # Local dev
 ]
+
 CORS(app, resources={r"/*": {"origins": FRONTEND_URLS}}, supports_credentials=True)
 
-# Setup WebSocket (force eventlet mode)
-socketio = SocketIO(app, cors_allowed_origins=FRONTEND_URLS, async_mode="eventlet")
+socketio = SocketIO(
+    app,
+    cors_allowed_origins=[
+        r"https:\/\/.*\.vercel\.app",
+        "https://apitester-fawn.vercel.app",
+        "http://localhost:3000"
+    ],
+    async_mode="eventlet"
+)
 
 # Store todos in memory (temporary)
 todos = []
