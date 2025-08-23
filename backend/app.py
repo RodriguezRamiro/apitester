@@ -17,9 +17,9 @@ CORS(
     app,
     resources={r"/*": {
         "origins": [
-            "http://localhost:3000",            # Local dev
-            "https://apitester-fawn.vercel.app",  # Production domain
-            r"https://.*\.vercel\.app"          # All Vercel preview deploys
+            "http://localhost:3000",                  # Local dev
+            "https://apitester-fawn.vercel.app",      # Main prod
+            "https://*.vercel.app"                    # All Vercel previews
         ]
     }},
     supports_credentials=True
@@ -30,7 +30,7 @@ socketio = SocketIO(
     cors_allowed_origins=[
         "http://localhost:3000",
         "https://apitester-fawn.vercel.app",
-        r"https://.*\.vercel\.app"
+        "https://*.vercel.app"
     ],
     async_mode="eventlet"
 )
