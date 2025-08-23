@@ -3,26 +3,32 @@
 import React from "react";
 import TodoPreview from "../components/TodoPreview";
 
+const mockTodos = [
+  { id: 1, text: "Sample todo", done: false, animation: "stable"},
+  { id: 2, text: "Completed task", done: true, animation: "stable" },
+];
+
 export default function About() {
   return (
     <div className="page-content">
       <h1 className="staggered">About Pulse Board</h1>
       <p className="staggered">
-        Pulse Board is an interactive API testing and Todo dashboard. It allows you to
-        manage todos, send GET, POST, PATCH, and DELETE requests, and see responses
-        in real-time.
+        Pulse Board is an interactive API testing and Todo dashboard. Add, update, or
+        complete tasks and watch live updates happen instantly.
       </p>
       <p className="staggered">
-        This project showcases full-stack capabilities with a Flask backend, React frontend,
-        and live WebSocket updates for a polished, real-time user experience.
+        Built with a Flask backend, React frontend, and live WebSocket updates, it demonstrates
+        real-time full-stack functionality.
       </p>
       <p className="staggered">
-        Use it to experiment with API endpoints, test data workflows, or simply explore
-        modern frontend-backend integration in action.
+        Use this page to explore the app’s core features and interact with a sample todo list.
       </p>
 
       {/* Embed live TodoPreview component */}
-      <TodoPreview />
+      <div className="todo-demo-section">
+        <h2 className="staggered">Try a Sample Todo</h2>
+        <TodoPreview todos={mockTodos} />
+      </div>
     </div>
   );
 }

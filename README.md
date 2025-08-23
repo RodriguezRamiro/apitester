@@ -17,13 +17,13 @@ A full-stack interactive dashboard that allows you to test API endpoints live wh
   - Animated feedback for actions.
 
 - **Real-Time Integration**
-  - Optional Socket.IO support for live updates across clients.
+  - Socket.IO updates for live todos across clients.
 
 ## Tech Stack
 
-- **Frontend:** React, CSS, optionally Socket.IO
+- **Frontend:** React, Vite, CSS, Socket.IO
 - **Backend:** Flask, Flask-CORS
-- **Deployment:** Local development via Flask dev server, frontend via Vite/React dev server
+- **Deployment:** Railway (backend), Vercel (frontend)
 
 ## Getting Started
 
@@ -32,19 +32,14 @@ A full-stack interactive dashboard that allows you to test API endpoints live wh
 cd backend
 pip install -r requirements.txt
 python app.py
+
 Frontend
-bash
-Copy
-Edit
 cd frontend
 npm install
 npm run dev
-Open http://localhost:5173 to view the dashboard.
+
 
 Folder Structure
-css
-Copy
-Edit
 frontend/
   src/
     components/
@@ -52,11 +47,25 @@ frontend/
     socket.js
 backend/
   app.py
-Future Improvements
+
+  Folder Structure
+frontend/
+  src/
+    components/
+    pages/
+    socket.js
+backend/
+  app.py
+
+
+  Future Improvements
+
 Persistent database (SQLite/PostgreSQL)
 
 User authentication
 
-Enhanced API testing features (headers, auth, etc.)
+Enhanced API testing features (custom headers, auth, etc.)
 
 Dark/light theme toggle
+
+More modular API handling
