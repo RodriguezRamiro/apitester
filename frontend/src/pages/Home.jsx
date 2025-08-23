@@ -1,10 +1,10 @@
 // src/pages/Home.jsx
 
+// src/pages/Home.jsx
 import React, { useState, useEffect } from "react";
 import TodoPreview from "../components/TodoPreview";
 import Notification from "../components/Notification";
 import socket from "../socket";
-import { getTodos } from "../api";
 import "../components/Home.css";
 
 export default function Home({ message, loading }) {
@@ -17,13 +17,48 @@ export default function Home({ message, loading }) {
   const [todos, setTodos] = useState([]);
   const [notification, setNotification] = useState(null);
 
+  // Base URL
+  const BASE_URL = import.meta.env.VITE_API_BASE_URL || "http://localhost:5000";
+
+
   // Notification helper
   const showNotification = (type, message) => {
     setNotification({ type, message });
     setTimeout(() => setNotification(null), 3000);
   };
 
-  // Fetch todos once on mount
+  // Fetch todos from backend
+
+  const getTodos = async () => {
+    const res = await fetch(`${BASE_URL}/api/todos`, { headers: { "Content-Type": "application/json" } });
+    return await res.json();
+  };
+
+  const addTodo = async (text) => {
+    const res = await fetch(`${BASE_URL}/api/todos`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ text }),
+    });
+    return await res.json();
+  };
+
+  const updateTodo = async (id, updates) => {
+    const res = await fetch(`${BASE_URL}/api/todos/${id}`, {
+      method: "PATCH",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(updates),
+    });
+    return await res.json();
+  };
+
+
+  const deleteTodo = async (id) => {
+    const res = await fetch(`${BASE_URL}/api/todos/${id}`, { method: "DELETE" });
+    return await res.json();
+  };
+
+
   const fetchTodos = async () => {
     try {
       const data = await getTodos();
@@ -34,7 +69,7 @@ export default function Home({ message, loading }) {
     }
   };
 
-  // Initial fetch and socket load
+  // Socket.io initialization & live updates
   useEffect(() => {
     fetchTodos(); // initial load
 
@@ -52,78 +87,62 @@ export default function Home({ message, loading }) {
     };
   }, []);
 
-  // API tester playground - raw fetch
+  // API tester playground
   const sendRequest = async (e) => {
     e.preventDefault();
 
-    // Determine the base URL: use VITE_BACKEND_URL if defined, otherwise relative path for dev proxy
-  const baseURL = import.meta.env.VITE_BACKEND_URL || "http://localhost:5000";
-  const url = `${baseURL}${requestData.endpoint}`;
+    const url = `${BASE_URL}${requestData.endpoint}`;
 
-  const options = {
+    const options = {
       method: requestData.method,
       headers: { "Content-Type": "application/json" },
     };
 
-    // Add body for POST/PATCH
-  if (["POST", "PATCH"].includes(requestData.method)) {
-    if (requestData.body.trim()) {
-      try {
-        options.body = JSON.stringify(JSON.parse(requestData.body));
-      } catch {
-        setResponse("Error: Invalid JSON body");
-        showNotification("error", "Invalid JSON body");
-        return;
-      }
-    } else {
-      options.body = JSON.stringify({});
-    }
-  }
-
-  try {
-    const res = await fetch(url, options);
-
-    if (!res.ok) throw new Error(`HTTP ${res.status}`);
-
-    let data;
-    const contentType = res.headers.get("content-type");
-
-    if (contentType && contentType.includes("application/json")) {
-      data = await res.json();
-    } else {
-      // fallback: try to parse text if JSON fails
-      const text = await res.text();
-      try {
-        data = JSON.parse(text);
-      } catch {
-        data = text; // just raw text
+    if (["POST", "PATCH"].includes(requestData.method)) {
+      if (requestData.body.trim()) {
+        try {
+          options.body = JSON.stringify(JSON.parse(requestData.body));
+        } catch {
+          setResponse("Error: Invalid JSON body");
+          showNotification("error", "Invalid JSON body");
+          return;
+        }
+      } else {
+        options.body = JSON.stringify({});
       }
     }
 
-    setResponse(JSON.stringify(data, null, 2));
+    try {
+      const res = await fetch(url, options);
 
-    // Refresh dashboard todos after request
-    fetchTodos();
+      if (!res.ok) throw new Error(`HTTP ${res.status}`);
 
-      // Animate response viewer
-    const viewer = document.querySelector(".response-viewer");
-    if (viewer) {
-      viewer.classList.remove("visible");
-      void viewer.offsetWidth;
-      viewer.classList.add("visible");
+
+      const contentType = res.headers.get("content-type");
+      const data = contentType?.includes("application/json") ? await res.json() : await res.text();
+
+      setResponse(JSON.stringify(data, null, 2));
+      fetchTodos(); // Refresh dashboard todos
+
+      const viewer = document.querySelector(".response-viewer");
+      if (viewer) {
+        viewer.classList.remove("visible");
+        void viewer.offsetWidth;
+        viewer.classList.add("visible");
+      }
+
+      showNotification("success", `Request ${requestData.method} successful`);
+    } catch (err) {
+      console.error("Request error:", err);
+      setResponse(`Error: ${err.message}`);
+      showNotification("error", `Request ${requestData.method} failed`);
     }
-
-    showNotification("success", `Request ${requestData.method} successful`);
-  } catch (err) {
-    console.error("Request error:", err);
-    setResponse(`Error: ${err.message}`);
-    showNotification("error", `Request ${requestData.method} failed`);
-  }
-}
+  };
 
   return (
     <div className="home-container">
-      {notification && <Notification type={notification.type} message={notification.message} />}
+      {notification && (
+      <Notification type={notification.type} message={notification.message} /> )}
       <div className="page-content-wrapper page-visible">
         <div className="page-content">
           <h1>Live API & Todo Dashboard</h1>
