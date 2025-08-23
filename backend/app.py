@@ -13,27 +13,10 @@ from flask_socketio import SocketIO, emit
 app = Flask(__name__)
 
 # Apply CORS to ALL routes (REST + WebSocket)
-CORS(
-    app,
-    resources={r"/*": {
-        "origins": [
-            "http://localhost:3000",                  # Local dev
-            "https://apitester-fawn.vercel.app",      # Main prod
-            "https://*.vercel.app"                    # All Vercel previews
-        ]
-    }},
-    supports_credentials=True
-)
+CORS(app, resources={r"/*": {"origins": "*"}}, supports_credentials=True)
 
-socketio = SocketIO(
-    app,
-    cors_allowed_origins=[
-        "http://localhost:3000",
-        "https://apitester-fawn.vercel.app",
-        "https://*.vercel.app"
-    ],
-    async_mode="eventlet"
-)
+socketio = SocketIO(app, cors_allowed_origins="*")
+
 
 # Store todos in memory (temporary)
 todos = []
