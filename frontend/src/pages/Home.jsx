@@ -153,6 +153,9 @@ export default function Home({ message, loading }) {
                 todos={todos}
                 fetchTodos={fetchTodos}
                 showNotification={showNotification}
+                addTodo={addTodo}
+                updateTodo={updateTodo}
+                deleteTodo={deleteTodo}
               />
             </div>
             <div className="right-panel">

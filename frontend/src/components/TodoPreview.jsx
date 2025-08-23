@@ -1,10 +1,9 @@
 // src/components/TodoPreview.jsx
 
 import React, { useState } from "react";
-import { addTodo, updateTodo, deleteTodo as deleteTodoApi } from "../api";
 import "./TodoPreview.css";
 
-export default function TodoPreview({ todos = [], fetchTodos, showNotification }) {
+export default function TodoPreview({ todos = [], fetchTodos, showNotification, addTodo, updateTodo, deleteTodo}) {
   const [input, setInput] = useState("");
   const [editingId, setEditingId] = useState(null);
   const [editingText, setEditingText] = useState("");
@@ -49,7 +48,7 @@ export default function TodoPreview({ todos = [], fetchTodos, showNotification }
   // delete todo
   const handleDeleteTodo = async (id) => {
     try {
-      await deleteTodoApi(id);
+      await deleteTodo(id);
       showLocalFeedback("success", "Todo deleted!");
       showNotification?.("success", "Todo deleted successfully");
       fetchTodos?.();
