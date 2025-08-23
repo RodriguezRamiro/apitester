@@ -4,32 +4,33 @@ import eventlet
 eventlet.monkey_patch()
 
 import os
-import re
 from flask import Flask, jsonify, request
 from flask_cors import CORS
 from flask_socketio import SocketIO, emit
-
-
 
 
 # Initialize Flask app
 app = Flask(__name__)
 
 # Apply CORS to ALL routes (REST + WebSocket)
-FRONTEND_URLS = [
-    "https://apitester-fawn.vercel.app",          # Production domain
-    re.compile(r"^https:\/\/.*\.vercel\.app$"),  # All Vercel preview deploys
-    "http://localhost:3000"                       # Local dev
-]
-
-CORS(app, resources={r"/*": {"origins": FRONTEND_URLS}}, supports_credentials=True)
+CORS(
+    app,
+    resources={r"/*": {
+        "origins": [
+            "http://localhost:3000",            # Local dev
+            "https://apitester-fawn.vercel.app",  # Production domain
+            r"https://.*\.vercel\.app"          # All Vercel preview deploys
+        ]
+    }},
+    supports_credentials=True
+)
 
 socketio = SocketIO(
     app,
     cors_allowed_origins=[
-        r"https:\/\/.*\.vercel\.app",
-        "https://*.vercel.app",
-        "http://localhost:3000"
+        "http://localhost:3000",
+        "https://apitester-fawn.vercel.app",
+        r"https://.*\.vercel\.app"
     ],
     async_mode="eventlet"
 )
